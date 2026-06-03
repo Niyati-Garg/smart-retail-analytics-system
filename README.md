@@ -12,6 +12,14 @@ Retail stores often use CCTV systems solely for surveillance purposes, leaving v
 
 ---
 
+## Dataset
+
+This project was developed using sample CCTV-style retail video footage for academic evaluation and system validation.
+
+The videos were used to test customer detection, tracking, cross-camera re-identification, zone-based movement analysis, and analytics generation workflows.
+
+---
+
 ## Key Features
 
 * Customer detection using YOLOv8
@@ -89,16 +97,17 @@ Heatmaps, summary reports, and dashboard charts are generated to support retail 
 
 This project was developed as part of a team-based Applications of AI course project.
 
-My primary responsibility was the development of the customer re-identification (ReID) module used for cross-camera customer tracking.
+My primary responsibility was the development of the customer re-identification (ReID) module used for cross-camera customer tracking. The ReID module was implemented in `code/reid_matcher.py`.
 
-Key contributions:
+### Key Contributions
 
-* Implemented embedding-based customer matching using OSNet feature vectors.
-* Applied feature normalization and cosine similarity scoring.
+* Implemented cross-camera customer matching using OSNet feature embeddings and cosine similarity.
+* Applied feature normalization to improve similarity comparison consistency.
 * Designed a zone-path overlap validation mechanism using Jaccard similarity.
-* Developed threshold-based visitor matching logic.
+* Developed threshold-based visitor matching logic for identity resolution.
 * Implemented a two-stage clustering and visitor-merging pipeline.
 * Generated global customer identities across multiple camera streams.
+* Reduced duplicate customer counting across different camera views.
 
 ### ReID Workflow
 
@@ -121,17 +130,34 @@ Stage 2 Cluster Merge
        ↓
 Global Visitor Identity
 ```
+### ReID Matching Logic
+
+The ReID module was designed to identify the same customer across different camera views and reduce duplicate visitor counts.
+
+The matching process consists of the following steps:
+
+1. Feature vectors generated using OSNet are collected for each tracked visitor.
+2. Feature vectors are normalized before comparison.
+3. Cosine similarity is computed between visitor embeddings.
+4. Zone visitation paths are compared using Jaccard similarity.
+5. Visitors are considered a match only when:
+   - they originate from different cameras,
+   - cosine similarity exceeds a predefined threshold,
+   - zone-path overlap exceeds a predefined threshold.
+6. Matched visitors are grouped into clusters representing a single customer.
+7. A second-stage cluster merge is performed to further reduce fragmented identities.
+8. Final merged identities are exported as global visitors for downstream analytics.
+   
+This hybrid approach combines appearance-based matching with movement-based validation to improve cross-camera identity resolution.
 
 ---
 
 ## Tech Stack
 
 ### Programming Language
-
 * Python
 
 ### Computer Vision & Machine Learning
-
 * YOLOv8
 * DeepSORT
 * TorchReID (OSNet)
@@ -140,14 +166,37 @@ Global Visitor Identity
 * Scikit-learn
 
 ### Data Analysis & Visualization
-
 * Pandas
 * Matplotlib
 * Seaborn
 
 ### Web Framework
-
 * Flask
+
+---
+
+## Repository Structure
+
+```text
+Smart-Retail-Analytics-System/
+│
+├── code/
+│   ├── app.py
+│   ├── analysis.py
+│   ├── reid_matcher.py
+│   └── index.html
+│
+├── screenshots/
+│   ├── upload_page.png
+│   ├── processing.png
+│   ├── dashboard.png
+│   ├── visitor_time.png
+│   ├── zone_analysis.png
+│   └── heatmap.jpg
+│
+├── Smart Retail Analytics System Project Report.pdf
+└── README.md
+```
 
 ---
 
@@ -175,7 +224,7 @@ Global Visitor Identity
 
 ### Zone-Based Heatmap
 
-![Heatmap](screenshots/heatmap.png)
+![Heatmap](screenshots/heatmap.jpg)
 
 ---
 
@@ -208,7 +257,4 @@ The system generates:
 
 * Academic team project developed as part of the Applications of AI course.
 * Repository contains core implementation files and project documentation.
-* Full project report is included in the repository for reference.
-
-```
-```
+* Full implementation details, screenshots, and project documentation are available in `Smart Retail Analytics System Project Report.pdf`.
